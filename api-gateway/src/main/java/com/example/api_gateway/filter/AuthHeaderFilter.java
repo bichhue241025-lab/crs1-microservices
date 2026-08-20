@@ -40,8 +40,7 @@ public class AuthHeaderFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        if (!request.getHeaders()
-                .containsKey("Authorization")) {
+        if (request.getHeaders().getFirst("Authorization") == null) {
 
             exchange.getResponse()
                     .setStatusCode(HttpStatus.UNAUTHORIZED);
