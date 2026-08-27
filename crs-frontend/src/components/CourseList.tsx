@@ -6,6 +6,8 @@ interface CourseListProps {
     state: LoadState;
     errorMessage: string;
     onRetry: () => void;
+    onEdit: (course: Course) => void;
+    onDelete: (course: Course) => void;
 }
 
 export default function CourseList({
@@ -13,6 +15,8 @@ export default function CourseList({
                                        state,
                                        errorMessage,
                                        onRetry,
+                                       onEdit,
+                                       onDelete,
                                    }: CourseListProps) {
     if (state === 'loading') {
         return <p>Dang tai danh sach mon hoc...</p>;
@@ -43,6 +47,7 @@ export default function CourseList({
                 <th>Ten mon hoc</th>
                 <th>So tin chi</th>
                 <th>So cho con lai</th>
+                <th>Thao tac</th>
             </tr>
             </thead>
 
@@ -56,6 +61,7 @@ export default function CourseList({
                 >
                     <td>{course.tenMonHoc}</td>
                     <td>{course.soTinChi}</td>
+
                     <td
                         style={{
                             color:
@@ -65,6 +71,22 @@ export default function CourseList({
                         }}
                     >
                         {course.soChoConLai} / {course.soChoToiDa}
+                    </td>
+
+                    <td>
+                        <button onClick={() => onEdit(course)}>
+                            Sua
+                        </button>
+
+                        <button
+                            onClick={() => onDelete(course)}
+                            style={{
+                                marginLeft: 8,
+                                color: '#b91c1c',
+                            }}
+                        >
+                            Xoa
+                        </button>
                     </td>
                 </tr>
             ))}
