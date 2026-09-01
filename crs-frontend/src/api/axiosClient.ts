@@ -7,6 +7,7 @@ const axiosClient = axios.create({
     },
 });
 
+// Request Interceptor - giu nguyen tu Buoi 7
 axiosClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('crs_token');
 
@@ -16,5 +17,26 @@ axiosClient.interceptors.request.use((config) => {
 
     return config;
 });
+
+// Response Interceptor - them moi o Buoi 8
+axiosClient.interceptors.response.use(
+    (response) => response,
+
+    (error) => {
+        if (
+            axios.isAxiosError(error) &&
+            error.response?.status === 401
+        ) {
+            localStorage.removeItem('crs_token');
+            localStorage.removeItem('crs_user');
+
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
 
 export default axiosClient;
