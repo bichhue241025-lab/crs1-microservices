@@ -7,18 +7,40 @@ const axiosClient = axios.create({
     },
 });
 
-// Request Interceptor - giu nguyen tu Buoi 7
+// Request Interceptor
 axiosClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('crs_token');
 
-    if (token) {
+    const method = config.method?.toLowerCase();
+    const url = config.url ?? '';
+
+    // GET /api/courses... la API public
+    // Bao gom:
+    // - GET /api/courses
+    // - GET /api/courses?keyword=...
+    // - GET /api/courses/{id}
+    const isPublicCourseRequest =
+        method === 'get' &&
+        (
+            url === '/api/courses' ||
+            url.startsWith('/api/courses?') ||
+            url.startsWith('/api/courses/')
+        );
+
+    // API dang nhap cung khong can JWT
+    const isLoginRequest =
+        method === 'post' &&
+        url === '/api/auth/login';
+
+    // Chi gui JWT cho API can xac thuc
+    if (token && !isPublicCourseRequest && !isLoginRequest) {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
 });
 
-// Response Interceptor - them moi o Buoi 8
+// Response Interceptor - Buoi 8
 axiosClient.interceptors.response.use(
     (response) => response,
 
