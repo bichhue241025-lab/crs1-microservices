@@ -32,34 +32,58 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String authHeader =
+                request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (
+                authHeader != null
+                        && authHeader.startsWith("Bearer ")
+        ) {
 
-            String token = authHeader.substring(7);
+            String token =
+                    authHeader.substring(7);
 
             try {
 
-                SecretKey key = Keys.hmacShaKeyFor(
-                        secret.getBytes(StandardCharsets.UTF_8)
-                );
+                SecretKey key =
+                        Keys.hmacShaKeyFor(
+                                secret.getBytes(
+                                        StandardCharsets.UTF_8
+                                )
+                        );
 
-                Claims claims = Jwts.parser()
-                        .verifyWith(key)
-                        .build()
-                        .parseSignedClaims(token)
-                        .getPayload();
+                Claims claims =
+                        Jwts.parser()
+                                .verifyWith(key)
+                                .build()
+                                .parseSignedClaims(token)
+                                .getPayload();
 
-                String username = claims.getSubject();
-                String role = claims.get(
-                        "role",
-                        String.class
-                );
+                String username =
+                        claims.getSubject();
+
+                String role =
+                        claims.get(
+                                "role",
+                                String.class
+                        );
+
+                // Buoi 9:
+                // Doc them userId tu JWT
+                Long userId =
+                        claims.get(
+                                "userId",
+                                Long.class
+                        );
 
                 var authToken =
                         new UsernamePasswordAuthenticationToken(
                                 username,
-                                null,
+
+                                // Buoi 9:
+                                // Tam dung credentials de luu userId
+                                userId,
+
                                 List.of(
                                         new SimpleGrantedAuthority(
                                                 "ROLE_" + role
@@ -73,7 +97,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             } catch (Exception e) {
 
+                // Token sai, het han hoac khong hop le
                 SecurityContextHolder.clearContext();
+
+                // Tra 401 de frontend Response Interceptor xu ly
+                response.setStatus(
+                        HttpServletResponse.SC_UNAUTHORIZED
+                );
+
+                response.setContentType(
+                        "application/json;charset=UTF-8"
+                );
+
+                response.getWriter().write(
+                        "{\"message\":\"Token khong hop le hoac da het han\"}"
+                );
+
+                return;
             }
         }
 
