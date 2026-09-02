@@ -51,12 +51,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         .getPayload();
 
                 String username = claims.getSubject();
-                String role = claims.get("role", String.class);
+
+                String role = claims.get(
+                        "role",
+                        String.class
+                );
+
+                // Buoi 9:
+                // Doc them userId tu JWT
+                Long userId = claims.get(
+                        "userId",
+                        Long.class
+                );
 
                 var authToken =
                         new UsernamePasswordAuthenticationToken(
                                 username,
-                                null,
+
+                                // Tam dung credentials de luu userId
+                                userId,
+
                                 List.of(
                                         new SimpleGrantedAuthority(
                                                 "ROLE_" + role
@@ -71,9 +85,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             } catch (Exception e) {
 
                 SecurityContextHolder.clearContext();
+
+                // Token sai / het han -> tra 401
+                response.setStatus(
+                        HttpServletResponse.SC_UNAUTHORIZED
+                );
+
+                response.setContentType(
+                        "application/json;charset=UTF-8"
+                );
+
+                response.getWriter().write(
+                        "{\"message\":\"Token khong hop le hoac da het han\"}"
+                );
+
+                return;
             }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(
+                request,
+                response
+        );
     }
 }

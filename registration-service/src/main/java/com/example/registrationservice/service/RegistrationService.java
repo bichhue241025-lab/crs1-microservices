@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -77,5 +78,14 @@ public class RegistrationService {
         registration.setTrangThai(DA_HUY);
 
         registrationRepository.save(registration);
+    }
+
+    // Buoi 9:
+    // Lay danh sach dang ky cua sinh vien dang dang nhap
+    public List<Registration> getMyRegistrations(
+            Long studentId
+    ) {
+        return registrationRepository
+                .findByStudentId(studentId);
     }
 }
