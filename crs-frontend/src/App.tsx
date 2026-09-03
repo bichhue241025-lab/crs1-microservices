@@ -16,6 +16,9 @@ import AdminCoursesPage from './pages/AdminCoursesPage';
 import RegisterCoursePage from './pages/RegisterCoursePage';
 import MyRegistrationsPage from './pages/MyRegistrationsPage';
 
+// Buoi bo sung - Quan ly API Key
+import ApiKeysPage from './pages/ApiKeysPage';
+
 function App() {
     return (
         <BrowserRouter>
@@ -48,6 +51,16 @@ function App() {
                         element={
                             <ProtectedRoute requiredRole="ADMIN">
                                 <AdminCoursesPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Quan ly API Key - chi ADMIN */}
+                    <Route
+                        path="/admin/api-keys"
+                        element={
+                            <ProtectedRoute requiredRole="ADMIN">
+                                <ApiKeysPage />
                             </ProtectedRoute>
                         }
                     />
